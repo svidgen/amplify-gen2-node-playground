@@ -3,6 +3,8 @@ import { Amplify } from "aws-amplify";
 import { Hub } from "aws-amplify/utils";
 import { generateClient } from "aws-amplify/api";
 import { signIn, getCurrentUser, fetchAuthSession } from "aws-amplify/auth";
+import { cognitoUserPoolsTokenProvider } from "aws-amplify/auth/cognito";
+import { TokenStorage } from "./util/token-store";
 import { Schema } from "./amplify/data/resource";
 import config from "./amplify_outputs.json";
 
@@ -11,7 +13,12 @@ import crypto from "crypto";
   crypto,
 };
 
-Amplify.configure(config);
+const tokenStore = new TokenStorage();
+
+function configure() {
+  Amplify.configure(config);
+  cognitoUserPoolsTokenProvider.setKeyValueStorage(tokenStore);
+}
 
 async function promptForCreds() {
   return prompts([
@@ -30,18 +37,36 @@ async function promptForCreds() {
 
 async function authenticate() {
   const { username, password } = await promptForCreds();
-  return signIn({ username, password });
+  return signIn({
+    username,
+    password,
+  });
+}
+
+async function getAuthSessionJSON() {
+  return JSON.stringify(await fetchAuthSession(), null, 2);
+}
+
+async function pause(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function main() {
+  configure();
   await authenticate();
+  console.log("fetchAuthSession", await getAuthSessionJSON());
 
-  const user = await getCurrentUser();
-  console.log({ user });
+  await pause(1234);
+  console.log("done pausing");
 
-  const session = await fetchAuthSession();
-  console.log({ session });
-  // const client = generateClient<Schema>();
+  await tokenStore.expireTokens();
+  configure();
+  const a = await getAuthSessionJSON();
+  const b = await getAuthSessionJSON();
+  console.log("after expiration and re-config", {
+    a,
+    b,
+  });
 }
 
 main();
