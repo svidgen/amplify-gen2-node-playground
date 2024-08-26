@@ -1,5 +1,6 @@
 # amplify
 node_modules
 .amplify
+.tokens.json
 amplify_outputs*
 amplifyconfiguration*
