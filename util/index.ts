@@ -13,6 +13,7 @@ import config from "../amplify_outputs.json";
 export const tokenStore = new TokenStorage();
 
 Amplify.configure(config);
+
 cognitoUserPoolsTokenProvider.setKeyValueStorage(tokenStore);
 
 export async function promptForCreds() {

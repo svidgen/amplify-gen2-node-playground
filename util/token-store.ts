@@ -38,6 +38,7 @@ export class TokenStorage implements KeyValueStorageInterface {
   }
 
   async getItem(key: string): Promise<string | null> {
+    // console.log('getting', key);
     // if (key.endsWith(".idToken") || key.endsWith(".accessToken"))
     //   console.log("getting", key);
     return this.storageObject[key];

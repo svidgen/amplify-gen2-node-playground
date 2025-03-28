@@ -13,139 +13,124 @@ Amplify.configure(config);
 async function main() {
   const client = generateClient<Schema>();
 
-  // const result = await client.queries.echoEnum({ status: "Active" });
-  // console.log(result);
+  // cleanup
 
-  // client.models.Customers.observeQuery({
-  //   selectionSet: ["id", "firstName", "lastName"],
-  // }).subscribe({
-  //   next({ items }) {
-  //     console.log(items);
-  //   },
-  // });
+  const { data: contents } = await client.models.Content.list();
+  for (const c of contents) {
+    console.log("deleting", c);
+    await client.models.Content.delete(c);
+  }
 
-  // client.models.Customers.onCreate({
-  //   selectionSet: ["firstName"],
-  // }).subscribe({
-  //   next({ firstName }) {
-  //     console.log("created", firstName);
-  //   },
-  // });
+  const { data: todos } = await client.models.Todo.list();
+  for (const todo of todos) {
+    console.log("deleting", todo);
+    await client.models.Todo.delete(todo);
+  }
 
-  // client.models.Customers.create({
-  //   firstName: "some",
-  // });
+  // test
 
   const selectionSet = ["id", "title", "content.*"] as const;
   type TodoModel = SelectionSet<Schema["Todo"]["type"], typeof selectionSet>;
 
-  const sub = client.models.Todo.observeQuery({
+  // seeding with an initial todo to show distinction
+
+  const { data: initialTodo } = await client.models.Todo.create({
+    title: "a pre-existing todo",
+  });
+
+  const { data: initialContent } = await client.models.Content.create({
+    todoId: initialTodo!.id,
+    text: "some initial content text",
+  });
+
+  console.log("seeded some initial content to fetch", {
+    initialTodo,
+    initialContent,
+  });
+
+  console.log("starting observeQuery ...");
+
+  // ok. now let's see how observeQuery differs when responding with initial Todo's
+  // which come through the query as opposed to those that arrive later via the sub.
+
+  const observeQuerySub = client.models.Todo.observeQuery({
     selectionSet: [...selectionSet],
   }).subscribe({
     next({ items }) {
-      console.log(items);
+      console.log("observeQuery update", items);
+    },
+  });
+
+  const modeledOnUpdateSub = client.models.Todo.onUpdate({
+    selectionSet: [...selectionSet],
+  }).subscribe({
+    next(item) {
+      console.log("modeled onUpdate sub", JSON.stringify(item));
+    },
+  });
+
+  const rawOnUpdateSub = (
+    client.graphql({
+      query: `subscription OnUpdateTodo {
+      onUpdateTodo {
+        id
+        title
+        content {
+          id
+          todoId
+          text
+          createdAt
+          updatedAt
+        }
+      }
+    }`,
+    }) as any
+  ).subscribe({
+    next(item) {
+      console.log("raw onUpdate sub", JSON.stringify(item, null, 2));
     },
   });
 
   await new Promise((unsleep) => setTimeout(unsleep, 1000));
-
   console.log("after sleep");
 
   const { data: todo } = await client.models.Todo.create({
     title: "a new todo",
   });
-
   console.log("after create todo");
 
   const { data: content } = await client.models.Content.create({
     todoId: todo?.id,
     text: "some content text",
   });
-
   console.log("after create content");
+  await new Promise((unsleep) => setTimeout(unsleep, 1000));
 
-  await client.models.Todo.update(todo!);
+  // the customer would ideally like to see an update via the observeQuery here,
+  // but since the new content doesn't touch the Todo, it won't trigger anything.
+  // but, the customer should be able to pair the content create/update with a
+  // simple mutation to "touch" the related Todo.
 
-  console.log("after 'touch' todo");
+  const { data: touchedTodo } = await client.models.Todo.update(todo!, {
+    // one of the problems is that our mutation operations do not allow
+    // selection sets on the type level ... but ... they do support it
+    // in the runtime. wtf?
+    selectionSet,
+  } as any);
+  console.log("after 'touch' todo", { touchedTodo });
+  await new Promise((unsleep) => setTimeout(unsleep, 1000));
 
-  // try {
-  // const request = client.models.PlayerCharacterRelationship.
-  // const request = client.models.PlayerCharacterRelationship.list();
-  // const request = client.graphql({
-  //   query: `
-  //     query x {
-  //       listPlayerCharacterRelationship {
-  //         items {
-  //           id
-  //         }
-  //       }
-  //     }
-  //   `,
-  // }) as any;
-  // client.cancel(request);
-  // const { data, errors } = await request;
-  // console.log({ data, errors });
-  // } catch (error) {
-  //   console.log("caught", error);
-  // }
+  // here, we see TODO's log out again, indicating that the "touch" worked; but
+  // observeQuery still returns the Todo with a lazy loader, which is *not* what
+  // we want.
 
-  // const { data: listResult } =
-  //   await client.models.PlayerCharacterRelationship.list({
-  //     filter: {
-  //       createdAt: { gt: "2022-02-02" },
-  //     },
-  //   });
-  // console.log({ listResult });
+  // why isn't this letting the app close ... we leaking something?
+  observeQuerySub.unsubscribe();
+  modeledOnUpdateSub.unsubscribe();
+  rawOnUpdateSub.unsubscribe();
 
-  // const { data: pc } = await client.models.PlayerCharacterRelationship.create(
-  //   {}
-  // );
-
-  // console.log({ pc });
-
-  // const { data: convo } = await client.models.Conversation.create({
-  //   title: "some title",
-  //   pcId: pc?.id,
-  // });
-
-  // const { data: listedConvos } = await client.models.Conversation.list({
-  //   filter: {
-  //     createdAt: { gt: "2024-06-19" },
-  //   },
-  // });
-
-  // console.log({ listedConvos });
-
-  // const { data: pcEager } = await client.models.PlayerCharacterRelationship.get(
-  //   {
-  //     id: pc!.id,
-  //   },
-  //   { selectionSet: ["id", "lastConversation.*"] }
-  // );
-
-  // console.log("created", {
-  //   pc,
-  //   pcEager,
-  //   convo,
-  //   lastConvo: await pc?.lastConversation(),
-  // });
-
-  // const { data: deletedConvo } = await client.models.Conversation.delete({
-  //   ...convo!,
-  // });
-
-  // const { data: pcEagerAfterDelete } =
-  //   await client.models.PlayerCharacterRelationship.get(
-  //     {
-  //       id: pc!.id,
-  //     },
-  //     { selectionSet: ["id", "lastConversation.*"] }
-  //   );
-
-  // console.log("after convo deletion", {
-  //   lazyPc: await pc?.lastConversation(),
-  //   pcEagerAfterDelete,
-  // });
+  // unrelated to the customer ask, but would like to understand what's keeping the
+  // process open after this point. some research to do.
 }
 
 main();

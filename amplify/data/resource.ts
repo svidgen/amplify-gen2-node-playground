@@ -4,11 +4,15 @@ import {
   defineData,
   defineFunction,
 } from "@aws-amplify/backend";
-import { buildCommands } from "../schema-helpers/test-schema-helper";
+// import { buildCommands } from "../schema-helpers/test-schema-helper";
 
 const echoHandler = defineFunction({
   entry: "./echo-handler/handler.ts",
 });
+
+// const getCompanyByIdHander = defineFunction({
+//   entry: "./echo-handler/getCompanyByIdLambda.ts",
+// });
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -21,6 +25,10 @@ const ValidStatuses = ["Active", "Inactive", "Unknown"] as const;
 
 const schema = a
   .schema({
+    ThingWithRequiredId: a.model({
+      id: a.integer().required(),
+      defaultedField: a.string(),
+    }),
     Todo: a.model({
       title: a.string(),
       content: a.hasOne("Content", "todoId"),
@@ -29,6 +37,15 @@ const schema = a
       todoId: a.id(),
       todo: a.belongsTo("Todo", "todoId"),
       text: a.string(),
+    }),
+    hasManyParent: a.model({
+      parentContent: a.string(),
+      children: a.hasMany("hasManyChild", ["parentId"]),
+    }),
+    hasManyChild: a.model({
+      childContent: a.string(),
+      parentId: a.id().required(),
+      hasManyParent: a.belongsTo("hasManyParent", ["parentId"]),
     }),
     Status: a.enum(ValidStatuses),
     PlayerCharacterRelationship: a
@@ -84,6 +101,41 @@ const schema = a
           // dataSource: a.ref("NamedValue"), // whatever
         }),
       ]),
+
+    // testing cycles between customTypes
+    // MasterTenantTable: a
+    //   .model({
+    //     pk: a.string().required(),
+    //     sk: a.string().required(),
+    //     company_id: a.id(),
+    //   })
+    //   .authorization((allow) => [allow.publicApiKey()]),
+    // Tenant: a.customType({
+    //   company: a.ref("Company"),
+    //   company_id: a.id().required(),
+    // }),
+    // Company: a.customType({
+    //   tenants: a.ref("Tenant").array(),
+    // }),
+    // getCompanyById: a
+    //   .query()
+    //   .arguments({ company_id: a.id().required() })
+    //   .returns(a.ref("Tenant").array())
+    //   .authorization((allow) => [allow.authenticated()])
+    //   .handler(a.handler.function(getCompanyByIdHander)),
+
+    // testing AI
+    summarize: a.generation({
+      aiModel: a.ai.model('Claude 3 Haiku'),
+      systemPrompt: "Summarize the following text:",
+    })
+    .arguments({
+      text: a.string().required()
+    })
+    .returns(a.customType({
+      summary: a.string()
+    }))
+    .authorization((allow) => [allow.publicApiKey()])
   })
   .authorization((allow) => [allow.publicApiKey()]);
 

@@ -1,0 +1,16 @@
+import { Schema } from "../resource";
+
+export const handler: Schema["getCompanyById"]["functionHandler"] = async (
+  event
+) => {
+  const result: Schema["getCompanyById"]["returnType"] = [
+    {
+      company_id: "company",
+      company: {
+        tenants: [{ company_id: "company" }],
+      },
+    },
+  ];
+
+  return result;
+};
