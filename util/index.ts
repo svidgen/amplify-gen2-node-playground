@@ -10,10 +10,8 @@ import config from "../amplify_outputs.json";
 export const tokenStore = new TokenStorage();
 
 export function configureAmplify() {
-  (globalThis as any).window = {
-    crypto,
-    WebSocket: w3cwebsocket
-  };
+  (global as any).crypto = crypto;
+  (global as any).WebSocket = w3cwebsocket;
   Amplify.configure(config);
   cognitoUserPoolsTokenProvider.setKeyValueStorage(tokenStore);
 }

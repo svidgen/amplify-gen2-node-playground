@@ -62,7 +62,8 @@ const schema = a
       message: a.string().required(),
     })
     .returns(a.ref("OrderStatusChange"))
-    .authorization((allow) => [allow.publicApiKey(), allow.guest()])
+    // https://github.com/aws-amplify/amplify-data/blob/2add2bd443b676279cdd7394db12bec2f3ddf287/packages/data-schema/src/SchemaProcessor.ts#L843
+    .authorization((allow) => [allow.publicApiKey()])
     .handler(
       a.handler.custom({
         entry: "./publishOrderFromEventBridge.js",
