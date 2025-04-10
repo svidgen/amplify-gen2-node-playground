@@ -1,7 +1,7 @@
 import prompts from "prompts";
 import { Amplify } from "aws-amplify";
 import { signUp, confirmSignUp } from "aws-amplify/auth";
-import config from "./amplify_outputs.json";
+import config from "../amplify_outputs.json";
 
 Amplify.configure(config);
 

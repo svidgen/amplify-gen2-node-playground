@@ -1,6 +1,6 @@
 import { Amplify } from "aws-amplify";
 import { getCurrentUser, fetchAuthSession } from "aws-amplify/auth";
-import { authenticate } from "./util/index";
+import { authenticate } from "../util/index";
 
 async function main() {
   await authenticate();

@@ -1,4 +1,4 @@
-import { authenticate } from "./util";
+import { authenticate } from "../util";
 
 async function main() {
   const user = await authenticate();

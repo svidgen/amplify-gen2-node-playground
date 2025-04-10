@@ -4,17 +4,19 @@ import { Amplify } from "aws-amplify";
 import { TokenStorage } from "./token-store";
 import { signIn, getCurrentUser, fetchAuthSession } from "aws-amplify/auth";
 import { cognitoUserPoolsTokenProvider } from "aws-amplify/auth/cognito";
+import { w3cwebsocket } from "websocket";
 import config from "../amplify_outputs.json";
-
-(global as any).window = {
-  crypto,
-};
 
 export const tokenStore = new TokenStorage();
 
-Amplify.configure(config);
-
-cognitoUserPoolsTokenProvider.setKeyValueStorage(tokenStore);
+export function configureAmplify() {
+  (globalThis as any).window = {
+    crypto,
+    WebSocket: w3cwebsocket
+  };
+  Amplify.configure(config);
+  cognitoUserPoolsTokenProvider.setKeyValueStorage(tokenStore);
+}
 
 export async function promptForCreds() {
   return prompts([

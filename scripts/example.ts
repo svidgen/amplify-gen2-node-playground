@@ -1,16 +1,10 @@
-import { Amplify } from "aws-amplify";
-import { Hub } from "aws-amplify/utils";
 import { generateClient } from "aws-amplify/api";
-import { Schema } from "./amplify/data/resource";
-import config from "./amplify_outputs.json";
-import { w3cwebsocket } from "websocket";
+import { Schema } from "../amplify/data/resource";
 import type { SelectionSet } from "aws-amplify/data";
-
-(global as any).WebSocket = w3cwebsocket;
-
-Amplify.configure(config);
+import { configureAmplify } from "../util";
 
 async function main() {
+  configureAmplify();
   const client = generateClient<Schema>();
 
   // cleanup
