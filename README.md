@@ -51,14 +51,4 @@ You'll notice in the example that Amplify configuration runs through a utility. 
 
 The example doesn't actually use owner auth for anything. But, I'm *pretty sure* from running tests on other branches that it works!
 
-## New `WebSocket` Issue
-
-Subscriptions had been working. As of a fresh install of this repo, stripped down to some bare bones, subscriptions no longer work.
-
-I haven't made it a priority to troubleshoot this yet. If you want to make my day, run the example script, fix the bug, and submit a PR. 🍻
-
-```
-npx tsx commands/example.ts
-```
-
 ## That's it
