@@ -86,7 +86,7 @@ const schema = a
       })
       .returns(a.ref("Status"))
       .handler(a.handler.function(echoHandler))
-      .authorization((allow) => [allow.publicApiKey(), allow.guest()]),
+      .authorization((allow) => [allow.guest()]),
     // ...buildCommands({ a, namespace: "myNamespaced" }),
     echoWithJSResolver: a
       .query()
