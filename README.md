@@ -9,6 +9,8 @@ Useful for quickly testing Amplify gen2 apps in the CLI.
 
 This will deploy the sandbox (backend) to your account.
 
+If you're creating multiple branches for multiple investigations, I suggest changing the package name in each branch to ensure each branch operates against a distinct sandbox.
+
 # Auth
 
 ## Create an account on the CLI
