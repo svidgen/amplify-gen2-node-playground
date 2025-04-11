@@ -17,6 +17,10 @@ const schema = a
       text: a.string(),
     }),
 
+    Dummy: a.model({
+      field: a.ref('OrderStatusChange')
+    }).authorization(allow => [allow.group('does-not-exist')]),
+
     // testing AI
     summarize: a.generation({
       aiModel: a.ai.model('Claude 3 Haiku'),
@@ -31,7 +35,7 @@ const schema = a
     .authorization((allow) => [allow.publicApiKey()]),
 
     // for testing event bridge
-    OrderStatus: a.enum(["OrderPending", "OrderShipped", "OrderDelivered"]),
+    OrderStatus: a.enum(["PENDING", "SHIPPED", "DELIVERED"]),
     OrderStatusChange: a.customType({
       orderId: a.id().required(),
       status: a.ref("OrderStatus").required(),

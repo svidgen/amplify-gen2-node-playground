@@ -59,7 +59,7 @@ const rule = new aws_events.CfnRule(eventStack, "MyOrderRule", {
 
     https://docs.aws.amazon.com/AmazonS3/latest/userguide/ev-events.html
     */
-    ["detail-type"]: ["OrderStatusChange"],
+    "detail-type": ["OrderStatusChange"],
     detail: {
       orderId: [{ exists: true }],
       status: ["PENDING", "SHIPPED", "DELIVERED"],
@@ -75,7 +75,7 @@ const rule = new aws_events.CfnRule(eventStack, "MyOrderRule", {
       appSyncParameters: {
         graphQlOperation: `
         mutation PublishOrderFromEventBridge(
-          $orderId: String!
+          $orderId: ID!
           $status: String!
           $message: String!
         ) {

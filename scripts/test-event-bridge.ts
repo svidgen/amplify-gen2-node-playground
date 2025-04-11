@@ -10,7 +10,7 @@ async function main() {
   // Subscribe to the mutations triggered by the EventBridge rule
   const sub = client.subscriptions.onOrderFromEventBridge().subscribe({
     next: (data) => {
-      console.log(data);
+      console.log('received', data);
     },
   });
   
@@ -18,8 +18,8 @@ async function main() {
 
   await client.mutations.publishOrderToEventBridge({
     orderId: 'order-123',
-    status: 'OrderPending',
-    message: 'A message'
+    status: 'SHIPPED',
+    message: 'revision 1'
   });
 
   console.log('message published');
