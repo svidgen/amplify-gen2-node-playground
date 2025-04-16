@@ -35,7 +35,10 @@ backend.data.addEventBridgeDataSource("EventBridgeDataSource", eventBus);
 const policyStatement = new PolicyStatement({
   effect: Effect.ALLOW,
   actions: ["appsync:GraphQL"],
-  resources: [`${backend.data.resources.graphqlApi.arn}/types/Mutation/*`],
+  resources: [
+    `${backend.data.resources.graphqlApi.arn}/types/Mutation/*`,
+    `${backend.data.resources.graphqlApi.arn}/*`
+  ],
 });
 
 // Create a role for the EventBus to assume

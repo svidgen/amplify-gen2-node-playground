@@ -17,9 +17,9 @@ const schema = a
       text: a.string(),
     }),
 
-    Dummy: a.model({
-      field: a.ref('OrderStatusChange')
-    }).authorization(allow => [allow.group('does-not-exist')]),
+    // Dummy: a.model({
+    //   field: a.ref('OrderStatusChange')
+    // }).authorization(allow => [allow.group('does-not-exist')]),
 
     // testing AI
     summarize: a.generation({
@@ -84,6 +84,8 @@ const schema = a
     ),
     })
   .authorization((allow) => [allow.publicApiKey()]);
+
+console.log(schema.transform().schema);
 
 export type Schema = ClientSchema<typeof schema>;
 
