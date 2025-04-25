@@ -36,8 +36,7 @@ const policyStatement = new PolicyStatement({
   effect: Effect.ALLOW,
   actions: ["appsync:GraphQL"],
   resources: [
-    `${backend.data.resources.graphqlApi.arn}/types/Mutation/*`,
-    `${backend.data.resources.graphqlApi.arn}/*`
+    `${backend.data.resources.graphqlApi.arn}/types/*`,
   ],
 });
 
