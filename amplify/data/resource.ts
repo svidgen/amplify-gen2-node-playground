@@ -30,6 +30,12 @@ const schema = a
     //   field: a.ref('OrderStatusChange')
     // }).authorization(allow => [allow.publicApiKey()]),
 
+    chat: a.conversation({
+      aiModel: a.ai.model("Claude 3.5 Sonnet"),
+      systemPrompt: `You are a helpful assistant`,
+    })
+    .authorization((allow) => allow.owner()),
+
     // testing AI
     summarize: a
       .generation({
