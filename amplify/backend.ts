@@ -51,7 +51,7 @@ const eventBusRole = new Role(eventStack, "AppSyncInvokeRole", {
 });
 
 // Create an EventBridge rule to route events to the AppSync API
-const rule = new aws_events.CfnRule(eventStack, "MyOrderRule2", {
+const rule = new aws_events.CfnRule(eventStack, "MyOrderRule", {
   eventBusName: eventBus.eventBusName,
   name: "broadcastOrderStatusChange",
   eventPattern: {
