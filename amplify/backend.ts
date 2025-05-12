@@ -10,6 +10,7 @@ import {
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
 
+const APP_ID = process.env.AWS_APP_ID ?? 'sandbox';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -53,7 +54,7 @@ const eventBusRole = new Role(eventStack, "AppSyncInvokeRole", {
 // Create an EventBridge rule to route events to the AppSync API
 const rule = new aws_events.CfnRule(eventStack, "MyOrderRule", {
   eventBusName: eventBus.eventBusName,
-  name: "broadcastOrderStatusChange",
+  name: `broadcastOrderStatusChange-${APP_ID}`,
   eventPattern: {
     source: ["amplify.orders"],
     /* The shape of the event pattern must match EventBridge's event message structure.
