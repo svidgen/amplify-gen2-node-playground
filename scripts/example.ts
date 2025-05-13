@@ -11,14 +11,7 @@ async function main() {
 
   const client = generateClient<Schema>({ authMode: 'userPool' });
 
-  // cleanup
-
-  const { data: contents } = await client.models.Content.list();
-  for (const c of contents) {
-    console.log("deleting", c);
-    await client.models.Content.delete(c);
-  }
-
+  // cleanup  }
   const { data: todos } = await client.models.Todo.list();
   for (const todo of todos) {
     console.log("deleting", todo);
@@ -27,23 +20,18 @@ async function main() {
 
   // test
 
-  const selectionSet = ["id", "title", "content.*"] as const;
+  const selectionSet = ["id", "title", "content"] as const;
   type TodoModel = SelectionSet<Schema["Todo"]["type"], typeof selectionSet>;
 
   // seeding with an initial todo to show distinction
 
   const { data: initialTodo } = await client.models.Todo.create({
     title: "a pre-existing todo",
-  });
-
-  const { data: initialContent } = await client.models.Content.create({
-    todoId: initialTodo!.id,
-    text: "some initial content text",
+    content: 'some initial content text',
   });
 
   console.log("seeded some initial content to fetch", {
-    initialTodo,
-    initialContent,
+    initialTodo
   });
 
   console.log("starting observeQuery ...");
@@ -94,14 +82,10 @@ async function main() {
 
   const { data: todo } = await client.models.Todo.create({
     title: "a new todo",
+    content: 'some content text',
   });
   console.log("after create todo");
 
-  const { data: content } = await client.models.Content.create({
-    todoId: todo?.id,
-    text: "some content text",
-  });
-  console.log("after create content");
   await new Promise((unsleep) => setTimeout(unsleep, 1000));
 
   // the customer would ideally like to see an update via the observeQuery here,
