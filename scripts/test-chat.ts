@@ -1,11 +1,19 @@
 import { generateClient } from "aws-amplify/api";
 import { Schema } from "../amplify/data/resource";
-import { authenticate, configureAmplify } from "../util";
+import { authenticate, configureAmplify, logFetch, logWebSocket } from "../util";
+
+const DEBUG = process.argv.some((arg) => ['--debug', '-d'].includes(arg));
+const VERBOSE = process.argv.some((arg) => ['--verbose', '-v'].includes(arg));
 
 configureAmplify();
 
 async function main() {
   await authenticate();
+
+  if (DEBUG || VERBOSE) {
+    logFetch();
+    logWebSocket();
+  }
 
   const client = generateClient<Schema>({ authMode: "userPool" });
 
@@ -17,7 +25,7 @@ async function main() {
   const sub = chat.onStreamEvent({
     next(event) {
       if (event.stopReason) {
-        process.stdout.write('\n');
+        process.stdout.write('\n\n');
         sub.unsubscribe();
         process.exit(0);
       } else {
