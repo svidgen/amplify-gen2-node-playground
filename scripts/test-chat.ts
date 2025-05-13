@@ -12,11 +12,17 @@ async function main() {
   const { data: chat, errors } = await client.conversations.chat.create();
 
   if (!chat) throw new Error("Couldn't create conversation.");
-  console.log("Conversation created.");
+  console.log("Conversation created.\n");
 
   const sub = chat.onStreamEvent({
     next(event) {
-      console.log(event);
+      if (event.stopReason) {
+        process.stdout.write('\n');
+        sub.unsubscribe();
+        process.exit(0);
+      } else {
+        process.stdout.write(event.text || "");
+      }
     },
     error(error) {
       console.error(error);
