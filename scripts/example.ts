@@ -1,11 +1,15 @@
 import { generateClient } from "aws-amplify/api";
 import { Schema } from "../amplify/data/resource";
 import type { SelectionSet } from "aws-amplify/data";
-import { configureAmplify } from "../util";
+import { authenticate, configureAmplify } from "../util";
+
+configureAmplify();
 
 async function main() {
-  configureAmplify();
-  const client = generateClient<Schema>();
+  const user = await authenticate();
+  console.log(`Logged in as ${user.signInDetails?.loginId}.`);
+
+  const client = generateClient<Schema>({ authMode: 'userPool' });
 
   // cleanup
 

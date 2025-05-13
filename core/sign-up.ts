@@ -1,46 +1,9 @@
-import prompts from "prompts";
-import { Amplify } from "aws-amplify";
-import { signUp, confirmSignUp } from "aws-amplify/auth";
-import config from "../amplify_outputs.json";
+import { configureAmplify, signup } from "../util";
 
-Amplify.configure(config);
-
-async function promptForCreds() {
-  return prompts([
-    {
-      type: "text",
-      name: "username",
-      message: "Username",
-    },
-    {
-      type: "password",
-      name: "password",
-      message: "Password",
-    },
-  ]) as Promise<{ username: string; password: string }>;
-}
-
-async function promptForCode() {
-  return prompts([
-    {
-      type: "text",
-      name: "confirmationCode",
-      message: "Confirmation Code",
-    },
-  ]) as Promise<{ confirmationCode: string }>;
-}
+configureAmplify();
 
 async function main() {
-  const { username, password } = await promptForCreds();
-  await signUp({
-    username,
-    password,
-  });
-  const { confirmationCode } = await promptForCode();
-  const result = await confirmSignUp({
-    username,
-    confirmationCode: confirmationCode,
-  });
+  const result = await signup();
   console.log({ result });
 }
 
