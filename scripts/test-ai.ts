@@ -6,8 +6,8 @@ configureAmplify();
 
 async function main() {
   await authenticate();
-  
-  const client = generateClient<Schema>();
+
+  const client = generateClient<Schema>({ authMode: "userPool" });
 
   const { data: chat, errors } = await client.conversations.chat.create();
 

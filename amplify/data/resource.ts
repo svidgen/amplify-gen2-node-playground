@@ -33,7 +33,7 @@ const schema = a
     // }).authorization(allow => [allow.publicApiKey()]),
 
     chat: a.conversation({
-      aiModel: a.ai.model("Claude 3.5 Sonnet"),
+      aiModel: a.ai.model("Claude 3.5 Haiku"),
       systemPrompt: `You are a helpful assistant`,
     })
     .authorization((allow) => allow.owner()),
