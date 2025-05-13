@@ -1,9 +1,7 @@
-import { authenticate, configureAmplify } from "../util";
-
-configureAmplify();
+import { signin } from "../util";
 
 async function main() {
-  const user = await authenticate();
+  const user = await signin();
   console.log(`Signed in as ${user.signInDetails?.loginId}`);
 }
 

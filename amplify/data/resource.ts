@@ -1,8 +1,7 @@
 import {
   type ClientSchema,
   a,
-  defineData,
-  defineFunction,
+  defineData
 } from "@aws-amplify/backend";
 
 const someAsyncOperation = defineFunction({
@@ -16,11 +15,12 @@ const schema = a
       content: a.hasOne("Content", "todoId"),
       owner: a.string(),
     }).authorization(allow => [allow.owner()]),
+    
     Content: a.model({
       todoId: a.id(),
       todo: a.belongsTo("Todo", "todoId"),
       text: a.string(),
-    }),
+    }).authorization(allow => [allow.owner()]),
 
     AsyncMessage: a.model({
       title: a.string().required(),
