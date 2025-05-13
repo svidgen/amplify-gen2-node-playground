@@ -14,7 +14,8 @@ const schema = a
     Todo: a.model({
       title: a.string(),
       content: a.hasOne("Content", "todoId"),
-    }),
+      owner: a.string(),
+    }).authorization(allow => [allow.owner()]),
     Content: a.model({
       todoId: a.id(),
       todo: a.belongsTo("Todo", "todoId"),

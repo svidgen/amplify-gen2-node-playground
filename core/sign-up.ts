@@ -1,9 +1,9 @@
 import prompts from "prompts";
 import { Amplify } from "aws-amplify";
 import { signUp, confirmSignUp } from "aws-amplify/auth";
-import config from "../amplify_outputs.json";
+import { configureAmplify } from "../util";
 
-Amplify.configure(config);
+configureAmplify();
 
 async function promptForCreds() {
   return prompts([

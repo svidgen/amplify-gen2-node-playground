@@ -1,4 +1,6 @@
-import { authenticate } from "../util";
+import { authenticate, configureAmplify } from "../util";
+
+configureAmplify();
 
 async function main() {
   const user = await authenticate();
