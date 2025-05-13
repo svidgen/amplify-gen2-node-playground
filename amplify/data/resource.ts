@@ -14,14 +14,14 @@ const schema = a
     }).authorization(allow => [allow.owner()]),
 
     chat: a.conversation({
-      aiModel: a.ai.model("Claude 3.5 Haiku"),
+      aiModel: a.ai.model("Claude 3.5 Sonnet"),
       systemPrompt: `You are a helpful assistant`,
     })
     .authorization((allow) => allow.owner()),
 
     summarize: a
       .generation({
-        aiModel: a.ai.model("Claude 3 Haiku"),
+        aiModel: a.ai.model("Claude 3 Sonnet"),
         systemPrompt: "Summarize the following text:",
       })
       .arguments({
